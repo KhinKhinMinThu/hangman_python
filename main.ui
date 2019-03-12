@@ -90,7 +90,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>strawberry.png</normaloff>strawberry.png</iconset>
+      <normaloff>image/strawberry.png</normaloff>image/strawberry.png</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_animals">
@@ -107,7 +107,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>cat.png</normaloff>cat.png</iconset>
+      <normaloff>image/cat.png</normaloff>image/cat.png</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_sports">
@@ -124,7 +124,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>ball.png</normaloff>ball.png</iconset>
+      <normaloff>image/ball.png</normaloff>image/ball.png</iconset>
     </property>
    </widget>
   </widget>
