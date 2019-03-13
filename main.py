@@ -2,6 +2,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.uic import loadUiType
+from HangMan import HangMan
+from functools import partial
 import os
 import sys
 import time
@@ -26,12 +28,17 @@ class Main(QMainWindow, FROM_MAIN):
     def __init__(self, parent=None):
         super(Main, self).__init__(parent)
         self.setupUi(self)
-        self.btn_fruits.clicked.connect(self.on_click)
-
-    def on_click(self):
-        QMessageBox.information(self, "Hangman", "Fruit category is selected")
-
+       
+        buttons = {self.btn_fruits : 'fruits', self.btn_animals : 'animals', self.btn_sports : 'sports'}
+        for  button in  buttons:
+            button.clicked.connect(partial(self.select_category, buttons[button]))
+       
         
+    def select_category(self, category):
+        QMessageBox.information(self, "Hangman", category.capitalize() + " category has been selected!")
+        HangMan.getRandomWord(category)
+    
+    
 class Splash(QMainWindow, FROM_SPLASH):
     def __init__(self, parent = None):
         super(Splash, self).__init__(parent)
