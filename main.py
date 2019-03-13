@@ -1,6 +1,6 @@
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
+from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUiType
 from HangMan import HangMan
 from functools import partial
