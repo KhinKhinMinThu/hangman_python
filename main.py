@@ -2,8 +2,10 @@ from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUiType
-from HangMan import HangMan
+
+from hangman import HangMan
 from functools import partial
+
 import os
 import sys
 import time
@@ -15,7 +17,7 @@ class ThreadProgress(QThread):
         QThread.__init__(self, parent)
     def run(self):
         i = 0
-        while i<101:
+        while i<11:
             time.sleep(0.06)
             self.mysignal.emit(i)
             i += 1
@@ -23,22 +25,38 @@ class ThreadProgress(QThread):
 FROM_SPLASH,_ = loadUiType(os.path.join(os.path.dirname(__file__),"splash.ui"))
 FROM_MAIN,_ = loadUiType(os.path.join(os.path.dirname(__file__),"main.ui"))
 
+''' To Moh Moh
+if you create another class for hangman UI -->
+    add a new var to keep track of score
+    create a new instance hangman = HangMan()
+    call guess_alpha(self, alpha) when player click the letter
+    
+    hangman.wrong_alpha --> wrongly guessed letters so far
+    hangman.win --> True if word is correct
+'''
 
+word_lists = 'a'
 class Main(QMainWindow, FROM_MAIN):
     def __init__(self, parent=None):
         super(Main, self).__init__(parent)
         self.setupUi(self)
-       
+        
+        #map the clicked button from UI to respective category
         buttons = {self.btn_fruits : 'fruits', self.btn_animals : 'animals', self.btn_sports : 'sports'}
         for  button in  buttons:
             button.clicked.connect(partial(self.select_category, buttons[button]))
-       
         
     def select_category(self, category):
         QMessageBox.information(self, "Hangman", category.capitalize() + " category has been selected!")
-        HangMan.getRandomWord(category)
-    
-    
+        #----------------------------------------------------------------------
+        #initialize hangman instance
+        hangman = HangMan()
+        
+        #call select_category method in hangman instance to start the game
+        hangman.select_category(category)
+        print('Selected word: ', hangman.selected_word) #get the selected word after calling the select_category function
+        #----------------------------------------------------------------------
+        
 class Splash(QMainWindow, FROM_SPLASH):
     def __init__(self, parent = None):
         super(Splash, self).__init__(parent)
@@ -53,7 +71,7 @@ class Splash(QMainWindow, FROM_SPLASH):
     @pyqtSlot(int)
     def progress(self, i):
         self.progressBar.setValue(i)
-        if i == 100:
+        if i == 10:
             self.hide()
             main = Main(self)
             main.show()
@@ -70,4 +88,3 @@ if __name__ == '__main__':
         main()
     except Exception as why:
         print(why)
-
