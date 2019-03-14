@@ -25,17 +25,8 @@ class ThreadProgress(QThread):
 FROM_SPLASH,_ = loadUiType(os.path.join(os.path.dirname(__file__),"splash.ui"))
 FROM_MAIN,_ = loadUiType(os.path.join(os.path.dirname(__file__),"main.ui"))
 
-''' To Moh Moh
-if you create another class for hangman UI -->
-    add a new var to keep track of score
-    create a new instance hangman = HangMan()
-    call guess_alpha(self, alpha) when player click the letter
-    
-    hangman.wrong_alpha --> wrongly guessed letters so far
-    hangman.win --> True if word is correct
-'''
 
-word_lists = 'a'
+
 class Main(QMainWindow, FROM_MAIN):
     def __init__(self, parent=None):
         super(Main, self).__init__(parent)
@@ -50,12 +41,14 @@ class Main(QMainWindow, FROM_MAIN):
         QMessageBox.information(self, "Hangman", category.capitalize() + " category has been selected!")
         #----------------------------------------------------------------------
         #initialize hangman instance
-        hangman = HangMan()
-        
-        #call select_category method in hangman instance to start the game
-        hangman.select_category(category)
-        print('Selected word: ', hangman.selected_word) #get the selected word after calling the select_category function
-        #----------------------------------------------------------------------
+        #keep score
+        hangman = HangMan(category)
+        hangman.guess_letter('a')
+        hangman.display_word()
+        hangman.display_wrong_letters()
+        hangman.win == True #end game
+    
+
         
 class Splash(QMainWindow, FROM_SPLASH):
     def __init__(self, parent = None):
