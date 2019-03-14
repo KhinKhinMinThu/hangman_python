@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUiType
 
-from hangman import HangMan
+#from hangman import HangMan
 from functools import partial
 
 import os
@@ -17,7 +17,7 @@ class ThreadProgress(QThread):
         QThread.__init__(self, parent)
     def run(self):
         i = 0
-        while i<11:
+        while i<101:
             time.sleep(0.06)
             self.mysignal.emit(i)
             i += 1
@@ -55,7 +55,7 @@ class Splash(QMainWindow, FROM_SPLASH):
         super(Splash, self).__init__(parent)
         QMainWindow.__init__(self)
         self.setupUi(self)
-        pixmap = QPixmap("splash.jpg")
+        pixmap = QPixmap("image/splash.jpg")
         self.splah_image.setPixmap(pixmap.scaled(1200, 750))
         progress = ThreadProgress(self)
         progress.mysignal.connect(self.progress)
