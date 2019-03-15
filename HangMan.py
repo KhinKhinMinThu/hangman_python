@@ -7,16 +7,17 @@ Created on Wed Mar 13 14:57:31 2019
 import random
 
 class HangMan:
-    
+    score = 0    
     def __init__(self, category):
         self.word_list = self.loadFile(category)
         self.start_game()
    
     def start_game(self):     
-        self.selected_word = self.pick_word() #word for player to guess
+        self.selected_word = 'acc' #self.pick_word() #word for player to guess
         self.display_letters = self.init_letters() #word player is guessing so far
         self.wrong_letters = [] #list of letter playered wrongly guessed
         self.win = False #True is player can guess the whole word correctly
+        print('Game START', self.selected_word,self.display_letters ,  self.wrong_letters ,self.win)
         
     def pick_word(self):
         word = random.choice(self.word_list)
@@ -49,26 +50,26 @@ class HangMan:
         else:
             for i in indices:
                 self.display_letters[i] = self.selected_word[i]
-        
-        #player has guessed the word correctly if there is no "_" in the list
-        if not '_' in self.display_letters:
-            self.win = True
-            
+        print('-------------------------------------------------------------------')    
         print('Guessed letter: ', letter)
         print('Wrongly guessed letter: ', self.wrong_letters)
         print('Display letter: ', self.display_letters)
-        print('Did player win?: ', self.win)
+        self.check_win()
         print('-------------------------------------------------------------------')
         
+    def check_win(self):
+        #player has guessed the word correctly if there is no "_" in the list
+        if not '_' in self.display_letters:
+            self.win = True
+            HangMan.score += 1
+        print('Did player win?: ', self.win, HangMan.score)
         
     def display_word(self):
         display_word = " ".join(self.display_letters)
-        print('Display word: ', display_word)
         return display_word
         
     def display_wrong_letters(self):
-        display_wrong_letters = ", ".join(self.wrong_letters)
-        print('Display wrong letters: ', display_wrong_letters)
+        display_wrong_letters = " ".join(self.wrong_letters)
         return display_wrong_letters
         
         

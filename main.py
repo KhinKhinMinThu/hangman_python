@@ -24,9 +24,34 @@ class ThreadProgress(QThread):
 
 FROM_SPLASH,_ = loadUiType(os.path.join(os.path.dirname(__file__),"splash.ui"))
 FROM_MAIN,_ = loadUiType(os.path.join(os.path.dirname(__file__),"main.ui"))
+FROM_HANGMAN,_ = loadUiType(os.path.join(os.path.dirname(__file__),"hangman_test.ui"))
 
-
-
+class HangManTest(QMainWindow, FROM_HANGMAN):
+    def __init__(self, parent=None):
+        super(HangManTest, self).__init__(parent)
+        self.setupUi(self)
+        self.hangman = HangMan(selected_category)
+        self.prepare_screen()
+        #map the clicked button from UI to respective category
+        buttons = {self.btn_a : 'a', self.btn_b : 'b', self.btn_c : 'c'}
+        for  button in  buttons:
+            button.clicked.connect(partial(self.select_letter, buttons[button]))
+        self.btn_next.clicked.connect(self.play_next)
+        
+    def prepare_screen(self):
+        self.lbl_wrong_letters.setText(self.hangman.display_wrong_letters())
+        self.lbl_word.setText(self.hangman.display_word())
+        self.lbl_score.setText(str(self.hangman.score))
+        
+    def select_letter(self, letter):
+        #initialize hangman instance
+        self.hangman.guess_letter(letter)
+        self.prepare_screen()
+    
+    def play_next(self):
+        self.hangman.start_game()
+        self.prepare_screen()
+        
 class Main(QMainWindow, FROM_MAIN):
     def __init__(self, parent=None):
         super(Main, self).__init__(parent)
@@ -40,14 +65,11 @@ class Main(QMainWindow, FROM_MAIN):
     def select_category(self, category):
         QMessageBox.information(self, "Hangman", category.capitalize() + " category has been selected!")
         #----------------------------------------------------------------------
-        #initialize hangman instance
-        #keep score
-        hangman = HangMan(category)
-        hangman.guess_letter('a')
-        hangman.display_word()
-        hangman.display_wrong_letters()
-        hangman.win == True #end game
-    
+        global selected_category 
+        selected_category = category
+        self.hide()
+        hmt = HangManTest(self)
+        hmt.show()    
 
         
 class Splash(QMainWindow, FROM_SPLASH):
