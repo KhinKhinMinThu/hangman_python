@@ -13,7 +13,7 @@ class HangMan:
         self.start_game()
    
     def start_game(self):     
-        self.selected_word = 'acc' #self.pick_word() #word for player to guess
+        self.selected_word = 'apple' #self.pick_word() #word for player to guess
         self.display_letters = self.init_letters() #word player is guessing so far
         self.wrong_letters = [] #list of letter playered wrongly guessed
         self.win = False #True is player can guess the whole word correctly
@@ -69,7 +69,7 @@ class HangMan:
         return display_word
         
     def display_wrong_letters(self):
-        display_wrong_letters = " ".join(self.wrong_letters)
+        display_wrong_letters = ",".join(self.wrong_letters)
         return display_wrong_letters
         
         
