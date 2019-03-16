@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUiType
 from pygame import mixer
 #py -3.7 -m pip install pygame (run this command for pygame installation)
@@ -72,7 +72,6 @@ class Category(QMainWindow, FROM_CATEGORY):
             button.clicked.connect(partial(self.select_category, buttons[button]))
         
     def select_category(self, category):
-        #QMessageBox.information(self, "Hangman", category.capitalize() + " category has been selected!")
         #----------------------------------------------------------------------
         global selected_category 
         selected_category = category
@@ -99,6 +98,7 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
                 self.btn_s : 's', self.btn_t : 't', self.btn_u : 'u', self.btn_v: 'v', self.btn_w: 'w', self.btn_x: 'x',
                 self.btn_y : 'y', self.btn_z : 'z'}
 
+        
         for  button in  buttons:
             button.clicked.connect(partial(self.select_letter, buttons[button]))
 
@@ -114,11 +114,14 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         #hint_limit = 2
         self.btn_hint.clicked.connect(self.generate_hint)
 
-        self.frames_image_list = ['image/1.png','image/2.png','3.png','4.png','5.png','6.png'];
-
-        pixmap = QPixmap(self.frames_image_list[0])
-        self.image_lbl_1.setPixmap(pixmap);
-        
+        self.frames_image_list = ['image/1.jpg','image/2.jpg','image/3.jpg','image/4.jpg','image/5.jpg','image/6.jpg','image/7.jpg'];
+        self.image_index = 0
+        self.refresh_image()
+    
+    def refresh_image(self):
+        pixmap = QPixmap(self.frames_image_list[self.image_index])
+        self.image_lbl_1.setPixmap(pixmap)
+      
     def select_letter(self, letter):
         # disable the button
         sender = self.sender()
@@ -129,12 +132,16 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
             self.play_sound(correct_sound)
         else:
             self.play_sound(error_sound)
+            self.image_index += 1;
+            self.refresh_image()
+
+
         self.prepare_screen()
         self.check_result()
         
     def play_sound(self, sound):
         sound.play()
-        time.sleep(1)
+        time.sleep(0.1)
         sound.stop()
         
     def generate_hint(self):
@@ -155,9 +162,12 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
             self.check_result()
               
     def play_next(self):
+
         self.play_sound(beep_sound)
         self.hangman.start_game()
         self.activate_all()
+        self.image_index = 0
+        self.refresh_image()
         self.prepare_screen()
 
     def prepare_screen(self):
@@ -195,6 +205,7 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
             msg.setText(message)
             msg.setWindowTitle("Game Result")
             msg.exec_()
+            # QCoreApplication.instance().quit()
         
 
 def main():
