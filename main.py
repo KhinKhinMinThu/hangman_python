@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.uic import loadUiType
 
 from HangMan import HangMan
@@ -79,9 +79,10 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         self.hangman = HangMan(selected_category)
         self.prepare_screen()
         #map the clicked button from UI to respective letter 
-        buttons = {self.btn_a : 'a', self.btn_b : 'b', self.btn_c : 'c',self.btn_d:'d',self.btn_e:'e',self.btn_f:'f',self.btn_g : 'g', self.btn_h : 'h', self.btn_i : 'i',self.btn_j:'j',self.btn_k:'k',self.btn_l:'l',
-                self.btn_m : 'm', self.btn_n : 'n', self.btn_o : 'o',self.btn_p:'p',self.btn_q:'q',self.btn_r:'r',
-                self.btn_s : 's', self.btn_t : 't', self.btn_u : 'u',self.btn_v:'v',self.btn_w:'w',self.btn_x:'x',
+        buttons = {self.btn_a : 'a', self.btn_b : 'b', self.btn_c : 'c', self.btn_d: 'd', self.btn_e: 'e', self.btn_f: 'f',
+                self.btn_g : 'g', self.btn_h : 'h', self.btn_i : 'i', self.btn_j: 'j', self.btn_k: 'k', self.btn_l: 'l',
+                self.btn_m : 'm', self.btn_n : 'n', self.btn_o : 'o', self.btn_p: 'p', self.btn_q: 'q', self.btn_r: 'r',
+                self.btn_s : 's', self.btn_t : 't', self.btn_u : 'u', self.btn_v: 'v', self.btn_w: 'w', self.btn_x: 'x',
                 self.btn_y : 'y', self.btn_z : 'z'}
 
         for  button in  buttons:
@@ -123,13 +124,29 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         for button in self.buttons:
             button.setEnabled(True)
         self.btn_next.setEnabled(False)
-    
-    def check_result(self):
+
+    def check_result(self):    
+        message = img = ''
+        is_display = False
+        
         if(self.hangman.check_win()):
-            QMessageBox.information(self, "Hangman", "YOU WIN")
+            message = 'You Win!'
+            img = "image/win.png"
             self.btn_next.setEnabled(True)
+            is_display = True
+            
         if(self.hangman.check_lose()):
-            QMessageBox.information(self, "Hangman", "YOU LOSE")
+            message = 'You Lose!'
+            img = "image/lose.png"
+            is_display = True
+    
+        if(is_display):     
+            msg = QMessageBox(self)
+            msg.setIconPixmap(QPixmap(img));
+            msg.setText(message)
+            msg.setWindowTitle("Game Result")
+            msg.exec_()
+        
 
 def main():
     app=QApplication(sys.argv)
