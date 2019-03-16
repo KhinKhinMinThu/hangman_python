@@ -7,17 +7,19 @@ Created on Wed Mar 13 14:57:31 2019
 import random
 
 class HangMan:
+    #static class variable to keep the score throughout the games while game instances reset
     score = 0    
-    def __init__(self, category):
+    def __init__(self, category, allowed_guesses=6):
         self.word_list = self.loadFile(category)
+        self.allowed_guesses = allowed_guesses #number of times player can guess the letters for each word
         self.start_game()
    
     def start_game(self):     
         self.selected_word = 'apple' #self.pick_word() #word for player to guess
         self.display_letters = self.init_letters() #word player is guessing so far
-        self.wrong_letters = [] #list of letter playered wrongly guessed
-        self.win = False #True is player can guess the whole word correctly
-        print('Game START', self.selected_word,self.display_letters ,  self.wrong_letters ,self.win)
+        self.wrong_letters = [] #list of letters playered wrongly guessed
+        self.wrong_guesses = 0 #number of letters player is guessing wrongly
+        print('Game START', self.selected_word,self.display_letters ,  self.wrong_letters)
         
     def pick_word(self):
         word = random.choice(self.word_list)
@@ -47,6 +49,7 @@ class HangMan:
         
         if(len(indices) == 0):
             self.wrong_letters.append(letter)
+            self.wrong_guesses += 1
         else:
             for i in indices:
                 self.display_letters[i] = self.selected_word[i]
@@ -54,22 +57,24 @@ class HangMan:
         print('Guessed letter: ', letter)
         print('Wrongly guessed letter: ', self.wrong_letters)
         print('Display letter: ', self.display_letters)
-        self.check_win()
         print('-------------------------------------------------------------------')
         
     def check_win(self):
         #player has guessed the word correctly if there is no "_" in the list
         if not '_' in self.display_letters:
-            self.win = True
             HangMan.score += 1
-        print('Did player win?: ', self.win, HangMan.score)
-        
+            return True
+        return False
+    
+    def check_lose(self):
+        return self.wrong_guesses >= self.allowed_guesses
+    
     def display_word(self):
         display_word = " ".join(self.display_letters)
         return display_word
         
     def display_wrong_letters(self):
-        display_wrong_letters = ",".join(self.wrong_letters)
+        display_wrong_letters = ", ".join(self.wrong_letters)
         return display_wrong_letters
         
         

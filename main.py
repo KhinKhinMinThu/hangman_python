@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUiType
 
@@ -22,7 +22,8 @@ class ThreadProgress(QThread):
         QThread.__init__(self, parent)
     def run(self):
         i = 0
-        while i<11:
+        #To change to 101
+        while i<51:
             time.sleep(0.06)
             self.mysignal.emit(i)
             i += 1
@@ -43,7 +44,8 @@ class Splash(QMainWindow, FROM_SPLASH):
     @pyqtSlot(int)
     def progress(self, i):
         self.progressBar.setValue(i)
-        if i == 10:
+        #To change to 100
+        if i == 50:
             self.hide()
             category = Category(self)
             category.show()
@@ -65,17 +67,18 @@ class Category(QMainWindow, FROM_CATEGORY):
         global selected_category 
         selected_category = category
         self.hide()
-        hmt = HangManTest(self)
+        hmt = HangmanGame(self)
         hmt.show()    
 
 
-class Hangman(QMainWindow, FROM_HANGMAN):
+class HangmanGame(QMainWindow, FROM_HANGMAN):
     def __init__(self, parent=None):
-        super(HangManTest, self).__init__(parent)
+        super(HangmanGame, self).__init__(parent)
         self.setupUi(self)
+        #initialize hangman instance with selected category
         self.hangman = HangMan(selected_category)
         self.prepare_screen()
-        #map the clicked button from UI to respective category
+        #map the clicked button from UI to respective letter 
         buttons = {self.btn_a : 'a', self.btn_b : 'b', self.btn_c : 'c',self.btn_d:'d',self.btn_e:'e',self.btn_f:'f',self.btn_g : 'g', self.btn_h : 'h', self.btn_i : 'i',self.btn_j:'j',self.btn_k:'k',self.btn_l:'l',
                 self.btn_m : 'm', self.btn_n : 'n', self.btn_o : 'o',self.btn_p:'p',self.btn_q:'q',self.btn_r:'r',
                 self.btn_s : 's', self.btn_t : 't', self.btn_u : 'u',self.btn_v:'v',self.btn_w:'w',self.btn_x:'x',
@@ -87,6 +90,9 @@ class Hangman(QMainWindow, FROM_HANGMAN):
         #To reset the buttons => so need to instance object's attribute
         self.buttons = buttons; 
 
+        #Player guessed the word correctly and move on to next game
+        #Next button is disabled until the player wins
+        self.btn_next.setEnabled(False)
         self.btn_next.clicked.connect(self.play_next)
 
         self.frames_image_list = ['image/1.png','image/2.png','3.png','4.png','5.png','6.png'];
@@ -94,31 +100,36 @@ class Hangman(QMainWindow, FROM_HANGMAN):
         pixmap = QPixmap(self.frames_image_list[0])
         self.image_lbl_1.setPixmap(pixmap);
         
-    def prepare_screen(self):
-        self.lbl_wrong_letters.setText(self.hangman.display_wrong_letters())
-        self.lbl_word.setText(self.hangman.display_word())
-        self.lbl_score.setText(str(self.hangman.score))
-        
     def select_letter(self, letter):
         # disable the button
         sender = self.sender()
         sender.setEnabled(False)
         
-        #initialize hangman instance
         self.hangman.guess_letter(letter)
         self.prepare_screen()
-    
+        self.check_result()
+        
     def play_next(self):
         self.hangman.start_game()
         self.activate_all()
         self.prepare_screen()
 
+    def prepare_screen(self):
+        self.lbl_wrong_letters.setText(self.hangman.display_wrong_letters())
+        self.lbl_word.setText(self.hangman.display_word())
+        self.lbl_score.setText(str(self.hangman.score))
+        
     def activate_all(self):
         for button in self.buttons:
             button.setEnabled(True)
-        
-
-
+        self.btn_next.setEnabled(False)
+    
+    def check_result(self):
+        if(self.hangman.check_win()):
+            QMessageBox.information(self, "Hangman", "YOU WIN")
+            self.btn_next.setEnabled(True)
+        if(self.hangman.check_lose()):
+            QMessageBox.information(self, "Hangman", "YOU LOSE")
 
 def main():
     app=QApplication(sys.argv)
