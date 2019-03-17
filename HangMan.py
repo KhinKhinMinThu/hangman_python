@@ -46,10 +46,11 @@ class HangMan:
     
     def guess_letter(self, letter):
         indices = [i for i, char in enumerate(self.selected_word) if char == letter]
-        
+        is_correct = True
         if(len(indices) == 0):
             self.wrong_letters.append(letter)
             self.wrong_guesses += 1
+            is_correct = False
         else:
             for i in indices:
                 self.display_letters[i] = self.selected_word[i]
@@ -58,6 +59,7 @@ class HangMan:
         print('Wrongly guessed letter: ', self.wrong_letters)
         print('Display letter: ', self.display_letters)
         print('-------------------------------------------------------------------')
+        return is_correct
         
     def check_win(self):
         #player has guessed the word correctly if there is no "_" in the list

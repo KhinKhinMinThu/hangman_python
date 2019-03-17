@@ -2,7 +2,8 @@ from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.uic import loadUiType
-
+from pygame import mixer
+#py -3.7 -m pip install pygame (run this command for pygame installation)
 from HangMan import HangMan
 from functools import partial
 
@@ -14,6 +15,13 @@ FROM_SPLASH,_ = loadUiType(os.path.join(os.path.dirname(__file__),"splash.ui"))
 FROM_CATEGORY,_ = loadUiType(os.path.join(os.path.dirname(__file__),"category.ui"))
 FROM_HANGMAN,_ = loadUiType(os.path.join(os.path.dirname(__file__),"hangman.ui"))
 
+mixer.init()
+correct_sound = mixer.Sound("sound/correct.wav")
+error_sound = mixer.Sound("sound/error.wav")
+success_sound = mixer.Sound("sound/success.wav")
+menu_sound = mixer.Sound("sound/menu.wav")
+gameover_sound = mixer.Sound("sound/gameover.wav")
+gamestart_sound = mixer.Sound("sound/gamestart.wav")
 
 # Progress bar
 class ThreadProgress(QThread):
@@ -44,8 +52,10 @@ class Splash(QMainWindow, FROM_SPLASH):
     @pyqtSlot(int)
     def progress(self, i):
         self.progressBar.setValue(i)
+        gamestart_sound.play()
         #To change to 100
         if i == 50:
+            gamestart_sound.stop()
             self.hide()
             category = Category(self)
             category.show()
@@ -66,6 +76,10 @@ class Category(QMainWindow, FROM_CATEGORY):
         #----------------------------------------------------------------------
         global selected_category 
         selected_category = category
+        #add menu selection sound
+        menu_sound.play()
+        time.sleep(2)
+        menu_sound.stop()
         self.hide()
         hmt = HangmanGame(self)
         hmt.show()    
@@ -105,12 +119,22 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         # disable the button
         sender = self.sender()
         sender.setEnabled(False)
-        
-        self.hangman.guess_letter(letter)
+        is_correct = self.hangman.guess_letter(letter)
+        #add sound effects
+        if is_correct:
+            self.play_sound(correct_sound)
+        else:
+            self.play_sound(error_sound)
         self.prepare_screen()
         self.check_result()
         
+    def play_sound(self, sound):
+        sound.play()
+        time.sleep(1)
+        sound.stop()
+        
     def play_next(self):
+        self.play_sound(menu_sound)
         self.hangman.start_game()
         self.activate_all()
         self.prepare_screen()
@@ -134,11 +158,13 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
             img = "image/win.png"
             self.btn_next.setEnabled(True)
             is_display = True
+            self.play_sound(success_sound)
             
         if(self.hangman.check_lose()):
             message = 'You Lose!'
             img = "image/lose.png"
             is_display = True
+            self.play_sound(gameover_sound)
     
         if(is_display):     
             msg = QMessageBox(self)
