@@ -19,7 +19,7 @@ mixer.init()
 correct_sound = mixer.Sound("sound/correct.wav")
 error_sound = mixer.Sound("sound/error.wav")
 success_sound = mixer.Sound("sound/success.wav")
-menu_sound = mixer.Sound("sound/menu.wav")
+beep_sound = mixer.Sound("sound/beep.wav")
 gameover_sound = mixer.Sound("sound/gameover.wav")
 gamestart_sound = mixer.Sound("sound/gamestart.wav")
 
@@ -77,9 +77,9 @@ class Category(QMainWindow, FROM_CATEGORY):
         global selected_category 
         selected_category = category
         #add menu selection sound
-        menu_sound.play()
+        beep_sound.play()
         time.sleep(2)
-        menu_sound.stop()
+        beep_sound.stop()
         self.hide()
         hmt = HangmanGame(self)
         hmt.show()    
@@ -109,6 +109,10 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         #Next button is disabled until the player wins
         self.btn_next.setEnabled(False)
         self.btn_next.clicked.connect(self.play_next)
+        
+        #Hint Button
+        #hint_limit = 2
+        self.btn_hint.clicked.connect(self.generate_hint)
 
         self.frames_image_list = ['image/1.png','image/2.png','3.png','4.png','5.png','6.png'];
 
@@ -133,8 +137,25 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         time.sleep(1)
         sound.stop()
         
+    def generate_hint(self):
+        # disable the hint button, if the hint limitation is reached
+        if  self.hangman.hint_limit == 0:
+            sender = self.sender()
+            sender.setEnabled(False)
+            
+        else:
+            hint = self.hangman.get_hint()
+            self.hangman.guess_letter(hint)
+            self.play_sound(correct_sound)
+            #disable the hinted alphabet button
+            for button in self.buttons:
+                if self.buttons.get(button) == hint:
+                    button.setEnabled(False)
+            self.prepare_screen()
+            self.check_result()
+              
     def play_next(self):
-        self.play_sound(menu_sound)
+        self.play_sound(beep_sound)
         self.hangman.start_game()
         self.activate_all()
         self.prepare_screen()
@@ -143,11 +164,13 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         self.lbl_wrong_letters.setText(self.hangman.display_wrong_letters())
         self.lbl_word.setText(self.hangman.display_word())
         self.lbl_score.setText(str(self.hangman.score))
+        self.lbl_hint.setText(self.hangman.display_hint())
         
     def activate_all(self):
         for button in self.buttons:
             button.setEnabled(True)
         self.btn_next.setEnabled(False)
+        self.btn_hint.setEnabled(True)
 
     def check_result(self):    
         message = img = ''
