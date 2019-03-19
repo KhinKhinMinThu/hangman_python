@@ -166,24 +166,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_next">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>540</y>
-      <width>301</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>20</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>NEXT</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btn_e">
     <property name="geometry">
      <rect>

@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, QCoreApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QPushButton
 from PyQt5.QtGui import QPixmap
 from PyQt5.uic import loadUiType
 from pygame import mixer
@@ -72,7 +72,6 @@ class Category(QMainWindow, FROM_CATEGORY):
             button.clicked.connect(partial(self.select_category, buttons[button]))
         
     def select_category(self, category):
-        #----------------------------------------------------------------------
         global selected_category 
         selected_category = category
         #add menu selection sound
@@ -105,11 +104,6 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         #To reset the buttons => so need to instance object's attribute
         self.buttons = buttons; 
 
-        #Player guessed the word correctly and move on to next game
-        #Next button is disabled until the player wins
-        self.btn_next.setEnabled(False)
-        self.btn_next.clicked.connect(self.play_next)
-        
         #Hint Button
         #hint_limit = 2
         self.btn_hint.clicked.connect(self.generate_hint)
@@ -162,7 +156,6 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
             self.check_result()
               
     def play_next(self):
-
         self.play_sound(beep_sound)
         self.hangman.start_game()
         self.activate_all()
@@ -179,34 +172,36 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
     def activate_all(self):
         for button in self.buttons:
             button.setEnabled(True)
-        self.btn_next.setEnabled(False)
         self.btn_hint.setEnabled(True)
 
     def check_result(self):    
-        message = img = ''
-        is_display = False
+        msg_box = QMessageBox(self)
+        is_win = self.hangman.check_win()
+        is_lose = self.hangman.check_lose()
         
-        if(self.hangman.check_win()):
-            message = 'You Win!'
-            img = "image/win.png"
-            self.btn_next.setEnabled(True)
-            is_display = True
+        if(is_win):
+            msg_box.setIconPixmap(QPixmap("image/win.png"))
+            msg_box.setText("Congratulations you just won!\nClick \"Next\" to continue.")
+            msg_box.addButton(QPushButton('Next'), QMessageBox.YesRole)
             self.play_sound(success_sound)
-            
-        if(self.hangman.check_lose()):
-            message = 'You Lose!'
-            img = "image/lose.png"
-            is_display = True
+                        
+        if(is_lose):
+            msg_box.setIconPixmap(QPixmap("image/lose.png"));
+            msg_box.setText("Sorry, you just lost the game.\nCorrect Word: " + self.hangman.selected_word.upper() + "\nTotal Score: " + str(self.hangman.score))
             self.play_sound(gameover_sound)
-    
-        if(is_display):     
-            msg = QMessageBox(self)
-            msg.setIconPixmap(QPixmap(img));
-            msg.setText(message)
-            msg.setWindowTitle("Game Result")
-            msg.exec_()
-            # QCoreApplication.instance().quit()
         
+        if(is_win | is_lose):
+            msg_box.setWindowTitle("Game Result")
+            msg_box.addButton(QPushButton('Close'), QMessageBox.NoRole)
+            msg_box.buttonClicked.connect(self.result_action)
+            msg_box.exec_()
+            
+    def result_action(self, btn):
+        if(btn.text() == 'Next'):
+            self.play_next()
+        else:
+            #close the application
+            self.close()
 
 def main():
     app=QApplication(sys.argv)

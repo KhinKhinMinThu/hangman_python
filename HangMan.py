@@ -27,6 +27,7 @@ class HangMan:
         
     def pick_word(self):
         word = random.choice(self.word_list)
+        print('-----------------------------------------------')
         print('Selected word: ', word, ', Len: ', len(word))
         
          #remove the selected word from the list
@@ -59,11 +60,6 @@ class HangMan:
         else:
             for i in indices:
                 self.display_letters[i] = self.selected_word[i]
-        print('-------------------------------------------------------------------')    
-        print('Guessed letter: ', letter)
-        print('Wrongly guessed letter: ', self.wrong_letters)
-        print('Display letter: ', self.display_letters)
-        print('-------------------------------------------------------------------')
         
         #remove guessed letter from hint_dict
         self.remove_letter_from_hint(letter)
@@ -82,11 +78,11 @@ class HangMan:
     
     def display_word(self):
         display_word = " ".join(self.display_letters)
-        return display_word
+        return display_word.upper()
         
     def display_wrong_letters(self):
         display_wrong_letters = ", ".join(self.wrong_letters)
-        return display_wrong_letters
+        return display_wrong_letters.upper()
         
     def display_hint(self):
         display_hint = str(self.hint_limit) + "/2 left"
