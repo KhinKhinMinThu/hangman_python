@@ -592,7 +592,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>560</y>
+      <y>540</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -841,7 +841,7 @@ border-color: rgb(192, 102, 11);</string>
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>560</y>
+      <y>540</y>
       <width>181</width>
       <height>41</height>
      </rect>

@@ -77,7 +77,7 @@ class Category(QMainWindow, FROM_CATEGORY):
         selected_category = category
         #add menu selection sound
         beep_sound.play()
-        time.sleep(2)
+        time.sleep(1)
         beep_sound.stop()
         self.hide()
         hmt = HangmanGame(self)
@@ -129,9 +129,9 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         is_correct = self.hangman.guess_letter(letter)
         #add sound effects
         if is_correct:
-            self.play_sound(correct_sound)
+            self.play_sound(correct_sound, 0.5)
         else:
-            self.play_sound(error_sound)
+            self.play_sound(error_sound, 0.5)
             self.image_index += 1;
             self.refresh_image()
 
@@ -139,9 +139,9 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         self.prepare_screen()
         self.check_result()
         
-    def play_sound(self, sound):
+    def play_sound(self, sound, sec):
         sound.play()
-        time.sleep(0.1)
+        time.sleep(sec)
         sound.stop()
         
     def generate_hint(self):
@@ -153,7 +153,7 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         else:
             hint = self.hangman.get_hint()
             self.hangman.guess_letter(hint)
-            self.play_sound(correct_sound)
+            self.play_sound(correct_sound, 0.5)
             #disable the hinted alphabet button
             for button in self.buttons:
                 if self.buttons.get(button) == hint:
@@ -163,7 +163,7 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
               
     def play_next(self):
 
-        self.play_sound(beep_sound)
+        self.play_sound(beep_sound, 0.5)
         self.hangman.start_game()
         self.activate_all()
         self.image_index = 0
@@ -190,14 +190,14 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
             message = 'You Win!'
             img = "image/win.png"
             self.btn_next.setEnabled(True)
+            self.play_sound(success_sound, 1.2)
             is_display = True
-            self.play_sound(success_sound)
             
         if(self.hangman.check_lose()):
             message = 'You Lose!'
             img = "image/lose.png"
+            self.play_sound(gameover_sound, 1.2)
             is_display = True
-            self.play_sound(gameover_sound)
     
         if(is_display):     
             msg = QMessageBox(self)
