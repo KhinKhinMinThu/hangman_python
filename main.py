@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, QCoreApplication
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, QSize
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QPushButton
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.uic import loadUiType
 from pygame import mixer
 #py -3.7 -m pip install pygame (run this command for pygame installation)
@@ -163,9 +163,10 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         self.prepare_screen()
 
     def prepare_screen(self):
-        self.lbl_wrong_letters.setText(self.hangman.display_wrong_letters())
+        self.lbl_wrong_letters.setText("Missed Letters: " + self.hangman.display_wrong_letters())
+        self.lbl_category.setText("Category: " + selected_category.capitalize())
         self.lbl_word.setText(self.hangman.display_word())
-        self.lbl_score.setText(str(self.hangman.score))
+        self.lbl_score.setText("Total Score: " + str(self.hangman.score))
         self.lbl_hint.setText(self.hangman.display_hint())
         
     def activate_all(self):
@@ -177,22 +178,36 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         msg_box = QMessageBox(self)
         is_win = self.hangman.check_win()
         is_lose = self.hangman.check_lose()
+    
+        font = QFont()
+        font.setFamily("Century Gothic")
+        font.setPointSize(12)
+        
+        btn_next = QPushButton('Next')
+        btn_close = QPushButton('Close')
+        btn_next.setFont(font)
+        btn_close.setFont(font)
+
         
         if(is_win):
             msg_box.setIconPixmap(QPixmap("image/win.png"))
-            msg_box.setText("Congratulations you just won!\nClick \"Next\" to continue.")
-            msg_box.addButton(QPushButton('Next'), QMessageBox.YesRole)
+            msg_box.setText("Congratulations you just won!\n\nClick \"Next\" to continue.")
+            msg_box.addButton(btn_next, QMessageBox.YesRole)
             self.play_sound(success_sound, 1.2)
                         
         if(is_lose):
             msg_box.setIconPixmap(QPixmap("image/lose.png"));
-            msg_box.setText("Sorry, you just lost the game.\nCorrect Word: " + self.hangman.selected_word.upper() + "\nTotal Score: " + str(self.hangman.score))
+            msg_box.setText("Sorry, you just lost the game.\n\nCorrect Word: " + self.hangman.selected_word.upper() + "\n\nTotal Score: " + str(self.hangman.score))
             self.play_sound(gameover_sound, 1.2)
         
         if(is_win | is_lose):
             msg_box.setWindowTitle("Game Result")
-            msg_box.addButton(QPushButton('Close'), QMessageBox.NoRole)
+            msg_box.addButton(btn_close, QMessageBox.NoRole)
             msg_box.buttonClicked.connect(self.result_action)
+            
+            msg_box.setBaseSize(QSize(1000, 120));
+            
+            msg_box.setFont(font)
             msg_box.exec_()
             
     def result_action(self, btn):
