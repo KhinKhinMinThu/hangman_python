@@ -155,12 +155,15 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
             self.check_result()
               
     def play_next(self):
-        self.play_sound(beep_sound, 0.5)
-        self.hangman.start_game()
-        self.activate_all()
-        self.image_index = 0
-        self.refresh_image()
-        self.prepare_screen()
+        is_valid = self.hangman.start_game()
+        if(is_valid == False): #no more word left to play
+            self.close() #close the application
+        else:
+            self.play_sound(beep_sound, 0.5)
+            self.activate_all()
+            self.image_index = 0
+            self.refresh_image()
+            self.prepare_screen()
 
     def prepare_screen(self):
         self.lbl_wrong_letters.setText("Missed Letters: " + self.hangman.display_wrong_letters())
@@ -185,8 +188,10 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         
         btn_next = QPushButton('Next')
         btn_close = QPushButton('Close')
+        btn_again = QPushButton('Play Again')
         btn_next.setFont(font)
         btn_close.setFont(font)
+        btn_again.setFont(font)
 
         
         if(is_win):
@@ -198,6 +203,7 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         if(is_lose):
             msg_box.setIconPixmap(QPixmap("image/lose.png"));
             msg_box.setText("Sorry, you just lost the game.\n\nCorrect Word: " + self.hangman.selected_word.upper() + "\n\nTotal Score: " + str(self.hangman.score))
+            msg_box.addButton(btn_again, QMessageBox.YesRole)
             self.play_sound(gameover_sound, 1.2)
         
         if(is_win | is_lose):
@@ -213,10 +219,16 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
     def result_action(self, btn):
         if(btn.text() == 'Next'):
             self.play_next()
+        elif(btn.text() == 'Play Again'):
+            self.hide()
+            category = Category(self)
+            category.show()
+            HangMan.score = 0
         else:
             #close the application
             self.close()
-
+            
+global main
 def main():
     app=QApplication(sys.argv)
     window = Splash()

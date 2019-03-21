@@ -16,6 +16,8 @@ class HangMan:
    
     def start_game(self):     
         self.selected_word = self.pick_word() #word for player to guess
+        if(self.selected_word == None): #return false if there is no more word left
+            return False
         self.display_letters = self.init_letters() #word player is guessing so far
         self.wrong_letters = [] #list of letters playered wrongly guessed
         self.wrong_guesses = 0 #number of letters player is guessing wrongly
@@ -23,31 +25,32 @@ class HangMan:
         #dictionary of hints -> letter as Value and indices as Key
         indices_keys = [i for i in range(len(self.selected_word))]
         self.hint_dict = {key: self.selected_word[key] for key in indices_keys}
-        print('Game START', self.selected_word,self.display_letters ,  self.wrong_letters)
-        
-    def pick_word(self):
-        word = random.choice(self.word_list)
-        print('-----------------------------------------------')
-        print('Selected word: ', word, ', Len: ', len(word))
-        
-         #remove the selected word from the list
-        self.word_list.remove(word)
-        print('Removed word: ', word, ', Remaining words: ', len(self.word_list))
-        
-        return word
+        return True
     
+    def pick_word(self):
+        #check if there is any word left to play
+        remaining = len(self.word_list)
+        if(remaining > 0):
+            word = random.choice(self.word_list)
+            print('-----------------------------------------------')
+            print('Selected word: ', word)
+            
+             #remove the selected word from the list
+            self.word_list.remove(word)
+            print('Remaining words: ', len(self.word_list))
+        
+            return word
+        return None
+        
     def init_letters(self):
         #initialize the list with '_'
         letters = ['_'] * len(self.selected_word)
-        print('Display letters: ', letters)
         return letters
         
     def loadFile(self, category):
         word_dir = 'words/'
         with open(word_dir+category+'.txt', 'r') as file:
             word_list = file.read().splitlines()
-            
-        #print('Total words loaded ('+category+'): ', len(word_list))
         return word_list
     
     def guess_letter(self, letter):
