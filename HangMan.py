@@ -22,9 +22,7 @@ class HangMan:
         self.wrong_letters = [] #list of letters playered wrongly guessed
         self.wrong_guesses = 0 #number of letters player is guessing wrongly
         self.hint_limit = 2
-        #dictionary of hints -> letter as Value and indices as Key
-        indices_keys = [i for i in range(len(self.selected_word))]
-        self.hint_dict = {key: self.selected_word[key] for key in indices_keys}
+        self.hint_list = [i for i in self.selected_word] #list to keep hint letters
         return True
     
     def pick_word(self):
@@ -64,8 +62,8 @@ class HangMan:
             for i in indices:
                 self.display_letters[i] = self.selected_word[i]
         
-        #remove guessed letter from hint_dict
-        self.remove_letter_from_hint(letter)
+        #remove guessed letter or hint from hint_list
+        self.remove_letter_from_hint_list(letter)
         
         return is_correct
         
@@ -87,37 +85,34 @@ class HangMan:
         display_wrong_letters = ", ".join(self.wrong_letters)
         return display_wrong_letters.upper()
         
-    def display_hint(self):
-        display_hint = str(self.hint_limit) + "/2 left"
-        return display_hint
+    def display_hint_limit(self):
+        display_hint_limit = str(self.hint_limit) + "/2 left"
+        return display_hint_limit
         
     def get_hint(self):
-        hints = list(self.hint_dict.values())
-        hint = random.choice(hints)
-        print('hints', hints)
+        hint = random.choice(self.hint_list)
+        print('hints', self.hint_list)
         print('Selected hint: ', hint)
-        
-        #remove the selected hint from the list
-        self.remove_letter_from_hint(hint)
         
         #reduce hint_limit by 1
         self.hint_limit = self.hint_limit - 1
        
-        print('Removed hint: ', hint, ', Remaining hints: ', self.hint_dict)
+        print('Removed hint: ', hint)
         return hint
         
-    def remove_letter_from_hint(self, letter):
-        to_remove = []
-        #loop hint dictionary
-        for key in self.hint_dict.keys():
-            #for each key in hint_dict, if the key's value is same as letter, remove that letter from hint_dict
-            if self.hint_dict.get(key) == letter:
-                to_remove.append(key)  
+    def remove_letter_from_hint_list(self, letter_to_remove):
+        to_remove_list = []
+        #loop hint list
+        for letter in self.hint_list:
+            #for each letter in hint_list, if the letter is the same as letter_to_remove, put the letter into to_remove_list
+            if letter == letter_to_remove:
+                to_remove_list.append(letter)  
         
-        for i in to_remove:
-            self.hint_dict.pop(i, None)
+        #remove each letter in hint_list which is inside to_remove_list
+        for letter_to_remove in to_remove_list:
+            self.hint_list.remove(letter_to_remove)
         
-        
+        print('Remaining hints: ', self.hint_list)
         
         
         

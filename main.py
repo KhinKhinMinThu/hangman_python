@@ -170,7 +170,7 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         self.lbl_category.setText("Category: " + selected_category.capitalize())
         self.lbl_word.setText(self.hangman.display_word())
         self.lbl_score.setText("Total Score: " + str(self.hangman.score))
-        self.lbl_hint.setText(self.hangman.display_hint())
+        self.lbl_hint.setText(self.hangman.display_hint_limit())
         
     def activate_all(self):
         for button in self.buttons:
