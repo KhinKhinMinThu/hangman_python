@@ -7,22 +7,27 @@ Created on Wed Mar 13 14:57:31 2019
 import random
 
 class HangMan:
-    #static class variable to keep the score throughout the games while game instances reset
     score = 0    
-    def __init__(self, category, allowed_guesses=6):
+    def __init__(self, category, wrong_guesses_allowed=6):
         self.word_list = self.loadFile(category)
-        self.allowed_guesses = allowed_guesses #number of times player can guess the letters for each word
+        self.wrong_guesses_allowed = wrong_guesses_allowed #number of times player can guess the letters for each word
         self.start_game()
    
-    def start_game(self):     
-        self.selected_word = self.pick_word() #word for player to guess
-        if(self.selected_word == None): #return false if there is no more word left
+    def start_game(self):  
+        #word for player to guess
+        self.selected_word = self.pick_word() 
+        #return false if there is no more word left
+        if(self.selected_word == None): 
             return False
-        self.display_letters = self.init_letters() #word player is guessing so far
-        self.wrong_letters = [] #list of letters playered wrongly guessed
-        self.wrong_guesses = 0 #number of letters player is guessing wrongly
+        #word player is guessing so far
+        self.display_letters = self.init_letters() 
+        #list of letters playered wrongly guessed
+        self.wrong_letters = [] 
+        #number of letters player is guessing wrongly
+        self.wrong_guesses = 0 
         self.hint_limit = 2
-        self.hint_list = [i for i in self.selected_word] #list to keep hint letters
+        #list to keep hint letters
+        self.hint_list = [i for i in self.selected_word] 
         return True
     
     def pick_word(self):
@@ -33,7 +38,7 @@ class HangMan:
             print('-----------------------------------------------')
             print('Selected word: ', word)
             
-             #remove the selected word from the list
+            #remove the selected word from the list
             self.word_list.remove(word)
             print('Remaining words: ', len(self.word_list))
         
@@ -41,18 +46,21 @@ class HangMan:
         return None
         
     def init_letters(self):
-        #initialize the list with '_'
+        #represent each letter in the word as '_'
         letters = ['_'] * len(self.selected_word)
         return letters
         
     def loadFile(self, category):
+        #directory of word text files
         word_dir = 'words/'
         with open(word_dir+category+'.txt', 'r') as file:
             word_list = file.read().splitlines()
         return word_list
     
     def guess_letter(self, letter):
-        indices = [i for i, char in enumerate(self.selected_word) if char == letter]
+        indices = [i for i, 
+                   char in enumerate(self.selected_word) 
+                   if char == letter]
         is_correct = True
         if(len(indices) == 0):
             self.wrong_letters.append(letter)
@@ -68,14 +76,14 @@ class HangMan:
         return is_correct
         
     def check_win(self):
-        #player has guessed the word correctly if there is no "_" in the list
+        #player has guessed the word correctly if there is no "_" in list
         if not '_' in self.display_letters:
             HangMan.score += 1
             return True
         return False
     
     def check_lose(self):
-        return self.wrong_guesses >= self.allowed_guesses
+        return self.wrong_guesses >= self.wrong_guesses_allowed
     
     def display_word(self):
         display_word = " ".join(self.display_letters)
@@ -91,28 +99,16 @@ class HangMan:
         
     def get_hint(self):
         hint = random.choice(self.hint_list)
-        print('hints', self.hint_list)
-        print('Selected hint: ', hint)
         
         #reduce hint_limit by 1
         self.hint_limit = self.hint_limit - 1
-       
-        print('Removed hint: ', hint)
         return hint
         
-    def remove_letter_from_hint_list(self, letter_to_remove):
-        to_remove_list = []
-        #loop hint list
-        for letter in self.hint_list:
-            #for each letter in hint_list, if the letter is the same as letter_to_remove, put the letter into to_remove_list
-            if letter == letter_to_remove:
-                to_remove_list.append(letter)  
+    def remove_letter_from_hint_list(self, letter):
+        self.hint_list = list(filter(lambda x: x != letter, 
+                                     self.hint_list))
         
-        #remove each letter in hint_list which is inside to_remove_list
-        for letter_to_remove in to_remove_list:
-            self.hint_list.remove(letter_to_remove)
-        
-        print('Remaining hints: ', self.hint_list)
+
         
         
         

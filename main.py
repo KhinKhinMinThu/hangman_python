@@ -30,12 +30,10 @@ class ThreadProgress(QThread):
         QThread.__init__(self, parent)
     def run(self):
         i = 0
-        #To change to 101
-        while i<51:
+        while i<101:
             time.sleep(0.06)
             self.mysignal.emit(i)
             i += 1
-
 
 # Splash Screen        
 class Splash(QMainWindow, FROM_SPLASH):
@@ -53,8 +51,7 @@ class Splash(QMainWindow, FROM_SPLASH):
     def progress(self, i):
         self.progressBar.setValue(i)
         gamestart_sound.play()
-        #To change to 100
-        if i == 50:
+        if i == 100:
             gamestart_sound.stop()
             self.hide()
             category = Category(self)
@@ -86,6 +83,7 @@ class Category(QMainWindow, FROM_CATEGORY):
 class HangmanGame(QMainWindow, FROM_HANGMAN):
     def __init__(self, parent=None):
         super(HangmanGame, self).__init__(parent)
+        #set up UI from the self object
         self.setupUi(self)
         #initialize hangman instance with selected category
         self.hangman = HangMan(selected_category)
@@ -166,6 +164,7 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
             self.prepare_screen()
 
     def prepare_screen(self):
+        #initial set up to display respective label on screen
         self.lbl_wrong_letters.setText("Missed Letters: " + self.hangman.display_wrong_letters())
         self.lbl_category.setText("Category: " + selected_category.capitalize())
         self.lbl_word.setText(self.hangman.display_word())
@@ -178,10 +177,10 @@ class HangmanGame(QMainWindow, FROM_HANGMAN):
         self.btn_hint.setEnabled(True)
 
     def check_result(self):    
-        msg_box = QMessageBox(self)
         is_win = self.hangman.check_win()
         is_lose = self.hangman.check_lose()
     
+        msg_box = QMessageBox(self)
         font = QFont()
         font.setFamily("Century Gothic")
         font.setPointSize(12)
